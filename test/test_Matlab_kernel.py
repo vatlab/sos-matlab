@@ -23,7 +23,7 @@ import os
 import unittest
 import shutil
 from ipykernel.tests.utils import assemble_output, execute, wait_for_idle
-from sos.jupyter.test_utils import sos_kernel, get_result, get_display_data, \
+from sos_notebook.test_utils import sos_kernel, get_result, get_display_data, \
     clear_channels
 
 class TestMatlabKernel(unittest.TestCase):

@@ -23,15 +23,15 @@
 from setuptools import find_packages, setup
 
 # obtain version of SoS
-with open('src/sos_javascript/_version.py') as version:
+with open('src/sos_matlab/_version.py') as version:
     for line in version:
         if line.startswith('__version__'):
             __version__ = eval(line.split('=')[1])
             break
 
-setup(name = "sos-javascript",
+setup(name = "sos-matlab",
     version = __version__,
-    description = 'SoS Notebook extension for languages Julia',
+    description = 'SoS Notebook extension for Matlab and Octave',
     author = 'Bo Peng',
     url = 'https://github.com/vatlab/SOS',
     author_email = 'bpeng@mdanderson.org',
@@ -57,13 +57,15 @@ setup(name = "sos-javascript",
     install_requires=[
           'sos',
           'sos-notebook',
+          'matlab_kernel',
       ],
     entry_points= '''
 [sos_actions]
-node = sos_javascript.actions:node
+matlab = sos_matlab.actions:matlab
 
 [sos_languages]
-JavaScript = sos_javascript.kernel:sos_JavaScript
+Matlab = sos_matlab.kernel:sos_Matlab
+Octave = sos_matlab.kernel:sos_Matlab
 '''
 )
 

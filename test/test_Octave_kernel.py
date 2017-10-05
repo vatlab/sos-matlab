@@ -23,7 +23,7 @@ import os
 import unittest
 import shutil
 from ipykernel.tests.utils import assemble_output, execute, wait_for_idle
-from sos.jupyter.test_utils import sos_kernel, get_result, clear_channels
+from sos_notebook.test_utils import sos_kernel, get_result, clear_channels
 
 class TestOctaveKernel(unittest.TestCase):
     #
