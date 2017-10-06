@@ -13,7 +13,6 @@ before_install:
     # Base SoS
     - sudo apt-get update
     - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
-    - sudo apt-get install octave
     - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
     - bash miniconda.sh -b -p $HOME/miniconda
     - export PATH="$HOME/miniconda/bin:$PATH"
@@ -47,7 +46,7 @@ script:
     - 'if [ $TRAVIS_PYTHON_VERSION == "3.6" ]; then
            pytest -x -v;
        else
-           pytest -x -v --cov sos-matlab --cov-report=xml;
+           pytest -s -x -v --cov sos --cov-report=xml;
        fi'
       
 after_success:
