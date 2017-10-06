@@ -45,7 +45,6 @@ services:
 install: "python setup.py install"
 before_script:
     - cd test
-    - sh build_test_docker.sh
 script:
     - 'if [ $TRAVIS_PYTHON_VERSION == "3.6" ]; then
            pytest -x -v;
