@@ -49,7 +49,7 @@ script:
     - 'if [ $TRAVIS_PYTHON_VERSION == "3.6" ]; then
            pytest -x -v;
        else
-           pytest -x -v --cov sos --cov-report=xml;
+           pytest -x -v --cov sos_matlab --cov-report=xml;
        fi'
       
 after_success:
