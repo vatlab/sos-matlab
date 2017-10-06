@@ -62,6 +62,7 @@ setup(name = "sos-matlab",
     entry_points= '''
 [sos_actions]
 matlab = sos_matlab.actions:matlab
+octave = sos_matlab.actions:octave
 
 [sos_languages]
 Matlab = sos_matlab.kernel:sos_Matlab

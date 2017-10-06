@@ -43,17 +43,15 @@ install: "python setup.py install"
 before_script:
     - cd test
 script:
-    - 'if [ $TRAVIS_PYTHON_VERSION == "3.6" ]; then
+    - 'if [ $TRAVIS_PYTHON_VERSION == "3.5" ]; then
            pytest -x -v;
        else
-           pytest -s -x -v --cov sos --cov-report=xml;
+           pytest -s -x -v --cov sos_matlab --cov-report=xml;
        fi'
       
 after_success:
-    - 'if [ $TRAVIS_PYTHON_VERSION == "3.5" ]; then
+    - 'if [ $TRAVIS_PYTHON_VERSION == "3.6" ]; then
            coverage combine;
-           ls -l coverage.xml;
-           python-codacy-coverage -r coverage.xml;
            coveralls;
         fi'
 

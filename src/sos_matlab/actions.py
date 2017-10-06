@@ -33,3 +33,15 @@ def matlab(script, args='-nojvm -nodisplay -nosplash -r ${filename!n};quit', **k
     return SoS_ExecuteScript(
         script, 'matlab', '.m', args).run(**kwargs)
 
+
+@SoS_Action(run_mode=['prepare', 'run', 'interactive'], acceptable_args=['script', 'args'])
+def octave(script, args='', **kwargs):
+    '''Execute specified script with command Matlab, with default options
+    "-nodisplay -r". This action accepts common action arguments such as input,
+    active, workdir, docker_image and args. In particular, content of one or more 
+    files  specified by option input would be
+    prepended before the specified script.
+    '''
+    return SoS_ExecuteScript(
+        script, 'octave', '.m', args).run(**kwargs)
+
