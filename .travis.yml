@@ -1,0 +1,70 @@
+dist: trusty
+group: edge
+os:
+    - linux
+    # travis does not support python on osx yet (https://github.com/travis-ci/travis-ci/issues/4729)
+language: python
+python:
+    #- "3.3" test stops at installing spyder notebook etc
+    #- "3.4" test fails for unknown reason (sh not found):w
+    - "3.5"
+    - "3.6"
+before_install:
+    # Base SoS
+    - sudo apt-get update
+    - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+    - sudo apt-get install octave
+    - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+    - bash miniconda.sh -b -p $HOME/miniconda
+    - export PATH="$HOME/miniconda/bin:$PATH"
+    - hash -r
+    - conda config --set always_yes yes --set changeps1 no
+    - conda update -q conda
+    - conda info -a
+    - pip install docker rq
+    - pip install pyyaml psutil tqdm nose
+    - pip install fasteners pygments networkx pydot pydotplus 
+    - pip install entrypoints jupyter coverage codacy-coverage pytest pytest-cov python-coveralls
+    - conda install pandas numpy
+
+    # SoS Notebook
+    - pip install jedi notebook nbconvert nbformat pyyaml psutil tqdm scipy
+    - pip install pygments ipython wand graphviz sos sos-bash sos-python
+
+    # Octave
+    - sudo apt-get install octave
+    # install dataframe package for octave to test exchanging dataframe between sos and octave
+    - octave --eval 'pkg install -forge dataframe'
+    # install octave kernel
+    - pip install octave_kernel
+    - python -m octave_kernel.install
+
+sudo: required
+services:
+    - docker
+install: "python setup.py install"
+before_script:
+    - cd test
+    - sh build_test_docker.sh
+script:
+    - 'if [ $TRAVIS_PYTHON_VERSION == "3.6" ]; then
+           pytest -x -v;
+       else
+           pytest -x -v --cov sos --cov-report=xml;
+       fi'
+      
+after_success:
+    - 'if [ $TRAVIS_PYTHON_VERSION == "3.5" ]; then
+           coverage combine;
+           ls -l coverage.xml;
+           python-codacy-coverage -r coverage.xml;
+           coveralls;
+        fi'
+
+notifications:
+    email:
+        recipients:
+            - ben.bob@gmail.com
+        on_success: never
+        on_failure: always
+
