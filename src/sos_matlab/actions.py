@@ -22,7 +22,7 @@
 
 from sos.actions import SoS_Action, SoS_ExecuteScript
 
-@SoS_Action(run_mode=['prepare', 'run', 'interactive'], acceptable_args=['script', 'args'])
+@SoS_Action(acceptable_args=['script', 'args'])
 def matlab(script, args='-nojvm -nodisplay -nosplash -r ${filename!n};quit', **kwargs):
     '''Execute specified script with command Matlab, with default options
     "-nodisplay -r". This action accepts common action arguments such as input,
@@ -34,7 +34,7 @@ def matlab(script, args='-nojvm -nodisplay -nosplash -r ${filename!n};quit', **k
         script, 'matlab', '.m', args).run(**kwargs)
 
 
-@SoS_Action(run_mode=['prepare', 'run', 'interactive'], acceptable_args=['script', 'args'])
+@SoS_Action(acceptable_args=['script', 'args'])
 def octave(script, args='', **kwargs):
     '''Execute specified script with command Matlab, with default options
     "-nodisplay -r". This action accepts common action arguments such as input,
