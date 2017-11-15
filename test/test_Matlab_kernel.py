@@ -63,7 +63,7 @@ df = pd.DataFrame({'column_{0}'.format(i): arr for i in range(10)})
             wait_for_idle(kc)
             execute(kc=kc, code="display(size(df))")
             stdout, _ = assemble_output(iopub)
-            self.assertEqual(stdout.strip().split(), ['900', '10'])
+            self.assertEqual(stdout.strip().split(), ['1000', '10'])
             execute(kc=kc, code="%use sos")
             wait_for_idle(kc)
 
@@ -79,6 +79,7 @@ import scipy.io as sio
 num_arr_var = numpy.array([1, 2, 3])
 logic_var = True
 logic_arr_var = [True, False, True]
+float_var = [1.2, 2.1]
 char_var = '1"23'
 char_arr_var = ['1', '2', '3']
 list_var = [1, 2, '3']
@@ -90,11 +91,11 @@ recursive_var = {'a': {'b': 123}, 'c': True}
             wait_for_idle(kc)
             execute(kc=kc, code='''
 %use Matlab
-%get null_var num_var num_arr_var logic_var logic_arr_var char_var char_arr_var mat_var set_var list_var dict_var recursive_var
+%get null_var num_var num_arr_var logic_var logic_arr_var char_var char_arr_var mat_var set_var list_var dict_var recursive_var float_var
 %dict -r
-%put null_var num_var num_arr_var logic_var logic_arr_var char_var char_arr_var mat_var set_var list_var dict_var recursive_var
+%put null_var num_var num_arr_var logic_var logic_arr_var char_var char_arr_var mat_var set_var list_var dict_var recursive_var float_var
 %use sos
-%dict null_var num_var num_arr_var logic_var logic_arr_var char_var char_arr_var mat_var set_var list_var dict_var recursive_var
+%dict null_var num_var num_arr_var logic_var logic_arr_var char_var char_arr_var mat_var set_var list_var dict_var recursive_var float_var
                 ''')
             res = get_result(iopub)
             self.assertEqual(res['null_var'], None)
@@ -103,6 +104,7 @@ recursive_var = {'a': {'b': 123}, 'c': True}
             self.assertEqual(res['logic_var'], True)
             self.assertEqual(res['logic_arr_var'], [True, False, True])
             self.assertEqual(res['char_var'], '1"23')
+            self.assertEqual(res['float_var'], [1.2, 2.1])
             self.assertEqual(list(res['list_var']), [1,2,'3'], 'Got {}'.format(res['list_var']))
             self.assertEqual(res['dict_var'], {'a': 1, 'b': 2, 'c': '3'})
             self.assertTrue(len(res['set_var']) ==3 and '3' in res['set_var'] and 1 in res['set_var'] and 2 in res['set_var'])

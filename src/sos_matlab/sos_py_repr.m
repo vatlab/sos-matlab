@@ -18,40 +18,53 @@
 % along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 function [repr] = sos_py_repr (obj)
-% numeric includes a lot of sub-datatype
+% isnumeric(A) returns true if A is a numeric array and false otherwise.
+% single Single-precision floating-point array
+% double Double-precision floating-point array
+% int8 8-bit signed integer array
+% uint8 8-bit unsigned integer array
+% int16 16-bit signed integer array
+% uint16 16-bit unsigned integer array
+% int32 32-bit signed integer array
+% uint32 32-bit unsigned integer array
+% int64 64-bit signed integer array
+% uint64 64-bit unsigned integer array
 if isnumeric(obj)
-    % inf
-    if isinf(obj)
-        if obj > 0
-            repr = 'np.inf';
+    % isscalar(A) returns logical 1 (true) if size(A) returns [1 1], and logical 0 (false) otherwise.
+    if isscalar(obj)
+        if isinf(obj)
+            if obj > 0
+                repr = 'np.inf';
+            else
+                repr = '-np.inf';
+            end
+        % complex
+        elseif isreal(obj) == 0
+            rl = num2str(real(obj));
+            im = num2str(imag(obj));
+            repr = strcat('complex(', rl, ',', im, ')');
+        % none
+        elseif isnan(obj)
+            repr = 'None';
         else
-            repr = '-np.inf';
-        end
-    % complex
-    elseif isreal(obj) == 0
-        rl = num2str(real(obj));
-        im = num2str(imag(obj));
-        repr = strcat('complex(', rl, ',', im, ')');
-    % none
-    elseif isnan(obj)
-        repr = 'None';
-    % vector, includes integer and float
-    elseif isvector(obj)
-        % integer and float
-        if length(obj) == 1
             repr = num2str(obj);
-        %vector
-        else
-            nu = sprintf('%.0f,', obj);
-            nu = nu(1:end - 1);
-            repr = strcat('np.array([', nu, '])');
         end
-    % martix
+    % isvector(A) returns logical 1 (true) if size(A) returns [1 n] or [n 1] with a nonnegative integer value n, and logical 0 (false) otherwise.
+    elseif isvector(obj)
+        if any(isinf(obj))
+            repr = strcat('np.array([', strjoin(arrayfun(@(x) sos_py_repr(x), obj, 'UniformOutput', false),','), '])');
+        elseif any(isnan(obj))
+            repr = strcat('np.array([', strjoin(arrayfun(@(x) sos_py_repr(x), obj, 'UniformOutput', false),','), '])');
+        else
+            repr = strcat('np.array([', strjoin(arrayfun(@(x) num2str(x), obj, 'UniformOutput',false),','), '])');
+        end
+    % ismatrix(V) returns logical 1 (true) if size(V) returns [m n] with nonnegative integer values m and n, and logical 0 (false) otherwise.
     elseif ismatrix(obj)
         save('-v6', fullfile(tempdir, 'mat2py.mat'), 'obj');
         repr = strcat('np.matrix(sio.loadmat(''', tempdir, 'mat2py.mat'')', '[''', 'obj', '''])');
     % other, maybe canbe improved with the vector's block
     else
+        % not sure what this could be
         repr = num2str(obj);
     end
 % char_arr_var
@@ -106,12 +119,12 @@ elseif islogical(obj)
 % table, table usually is also real, and can be a vector and matrix
 % sometimes, so it needs to be put in front of them.
 elseif istable(obj)
-cd (tempdir);
-writetable(obj,'tab2py.csv','Delimiter',',','QuoteStrings',true);
-repr = strcat('pd.read_csv(''', tempdir, 'tab2py.csv''', ')');
-else
-    % unrecognized/unsupported datatype is transferred from
-    % matlab to Python as string "Unsupported datatype"
-    repr = 'Unsupported datatype';
-end
+    cd (tempdir);
+    writetable(obj,'tab2py.csv','Delimiter',',','QuoteStrings',true);
+    repr = strcat('pd.read_csv(''', tempdir, 'tab2py.csv''', ')');
+    else
+        % unrecognized/unsupported datatype is transferred from
+        % matlab to Python as string "Unsupported datatype"
+        repr = 'Unsupported datatype';
+    end
 end
