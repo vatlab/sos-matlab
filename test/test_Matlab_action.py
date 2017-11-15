@@ -41,18 +41,18 @@ class TestActions(unittest.TestCase):
 
     def testMatlab(self):
         '''Test action matlab'''
-        if os.path.isfile('matlab_example.txt'):
-            os.remove('matlab_example.txt')
+        if os.path.isfile('/tmp/matlab_example.txt'):
+            os.remove('/tmp/matlab_example.txt')
         script = SoS_Script(r'''
 [0]
 matlab:
-    f = fopen("matlab_example.txt", "w")
-    fprintf(f, "A, B, C, D\n")
-    fclose(f)
+    f = fopen("/tmp/matlab_example.txt", "w");
+    fprintf(f, "A, B, C, D\n");
+    fclose(f);
 ''')
         wf = script.workflow()
         Base_Executor(wf).run()
-        self.assertTrue(os.path.isfile('matlab_example.txt'))
+        self.assertTrue(os.path.isfile('/tmp/matlab_example.txt'))
 
 
 if __name__ == '__main__':
