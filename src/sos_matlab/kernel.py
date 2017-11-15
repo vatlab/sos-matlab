@@ -40,8 +40,8 @@ Matlab_init_statements = r'''
 path(path, {!r})
 '''.format(os.path.split(__file__)[0])
 
-class sos_Matlab:
-    supported_kernels = {'Matlab': ['matlab', 'imatlab'], 'Octave': ['octave']}
+class sos_MATLAB:
+    supported_kernels = {'MATLAB': ['matlab', 'imatlab'], 'Octave': ['octave']}
     background_color = '#dff8fb'
     options = {}
 

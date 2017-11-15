@@ -65,8 +65,8 @@ matlab = sos_matlab.actions:matlab
 octave = sos_matlab.actions:octave
 
 [sos_languages]
-Matlab = sos_matlab.kernel:sos_Matlab
-Octave = sos_matlab.kernel:sos_Matlab
+MATLAB = sos_matlab.kernel:sos_MATLAB
+Octave = sos_matlab.kernel:sos_MATLAB
 '''
 )
 
