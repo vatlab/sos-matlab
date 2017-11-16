@@ -39,6 +39,7 @@ class TestActions(unittest.TestCase):
         for f in self.temp_files:
             file_target(f).remove('both')
 
+    @unittest.skipIf(not shutil.which('matlab'), 'Matlab not installed')
     def testMatlab(self):
         '''Test action matlab'''
         if os.path.isfile('/tmp/matlab_example.txt'):
