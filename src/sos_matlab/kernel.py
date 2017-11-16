@@ -106,8 +106,8 @@ class sos_MATLAB:
             dic = tempfile.tempdir
             os.chdir(dic)
             sio.savemat('ary2mtlb.mat', {'obj': obj})
-            return 'load(fullfile(' + '\'' + dic + '\'' + ',' \
-                + '\'ary2mtlb.mat\')).obj'
+            return 'sos_load_obj(fullfile(' + '\'' + dic + '\'' + ',' \
+                + '\'ary2mtlb.mat\'))'
         elif isinstance(obj, dict):
             dic = tempfile.tempdir
             os.chdir(dic)
