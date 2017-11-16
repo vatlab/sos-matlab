@@ -57,7 +57,6 @@ setup(name = "sos-matlab",
     install_requires=[
           'sos>=0.9.10.11',
           'sos-notebook>=0.9.10.9',
-          'matlab_kernel',
       ],
     entry_points= '''
 [sos_actions]

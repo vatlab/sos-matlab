@@ -41,7 +41,7 @@ path(path, {!r})
 '''.format(os.path.split(__file__)[0])
 
 class sos_MATLAB:
-    supported_kernels = {'MATLAB': ['matlab', 'imatlab'], 'Octave': ['octave']}
+    supported_kernels = {'MATLAB': ['imatlab', 'matlab'], 'Octave': ['octave']}
     background_color = '#dff8fb'
     options = {}
 
