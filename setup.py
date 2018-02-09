@@ -55,14 +55,10 @@ setup(name = "sos-matlab",
     packages = find_packages('src'),
     package_dir = {'': 'src'},
     install_requires=[
-          'sos>=0.9.10.11',
+          'sos>=0.9.12.0',
           'sos-notebook>=0.9.10.9',
       ],
     entry_points= '''
-[sos_actions]
-matlab = sos_matlab.actions:matlab
-octave = sos_matlab.actions:octave
-
 [sos_languages]
 MATLAB = sos_matlab.kernel:sos_MATLAB
 Octave = sos_matlab.kernel:sos_MATLAB
