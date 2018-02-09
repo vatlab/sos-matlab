@@ -33,7 +33,7 @@ before_install:
     - octave --eval 'pkg install -forge dataframe'
     # install octave kernel
     - pip install octave_kernel
-    - python -m octave_kernel.install
+    - python -m octave_kernel install
 
 sudo: required
 install: "python setup.py install"
