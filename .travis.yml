@@ -40,7 +40,7 @@ install: "python setup.py install"
 before_script:
     - cd test
 script:
-    - pytest -s -x -v --cov sos_matlab --cov-report=xml
+    - pytest -s -x -v --cov-report=xml
       
 after_success:
     - coverage combine
