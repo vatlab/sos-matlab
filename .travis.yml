@@ -25,7 +25,8 @@ before_install:
 
     # SoS Notebook
     - pip install jedi notebook nbconvert nbformat pyyaml psutil tqdm scipy
-    - pip install pygments ipython wand graphviz sos sos-bash sos-python
+    - pip install pygments ipython wand graphviz sos sos-bash sos-notebook sos-python
+    - python sos_notebook.install
 
     # Octave
     - sudo apt-get install octave
