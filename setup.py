@@ -56,7 +56,7 @@ setup(name = "sos-matlab",
     package_dir = {'': 'src'},
     install_requires=[
           'sos>=0.9.12.0',
-          'sos-notebook>=0.9.10.9',
+          'sos-notebook>=0.9.12.6',
       ],
     entry_points= '''
 [sos_languages]
