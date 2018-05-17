@@ -85,7 +85,7 @@ mat_var = numpy.matrix([[1,2],[3,4]])
 recursive_var = {'a': {'b': 123}, 'c': True}
 ''')
             wait_for_idle(kc)
-            execute(kc=kc, code='''
+            execute(kc=kc, code='''\
 %use Octave
 %get null_var num_var num_arr_var logic_var logic_arr_var char_var char_arr_var mat_var set_var list_var dict_var recursive_var
 %dict -r
@@ -123,7 +123,7 @@ char_arr_var = ['1'; '2'; '3']
 mat_var = [1:3; 2:4]
 """)
             wait_for_idle(kc)
-            execute(kc=kc, code="""
+            execute(kc=kc, code="""\
 %dict -r
 %put null_var num_var num_arr_var logic_var logic_arr_var char_var char_arr_var mat_var
 %dict null_var num_var num_arr_var logic_var logic_arr_var char_var char_arr_var mat_var
