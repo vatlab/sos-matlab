@@ -37,7 +37,7 @@ before_install:
     - python -m octave_kernel install --user
 
 sudo: required
-install: "python setup.py install"
+install: "pip install . -U"
 before_script:
     - cd test
 script:
