@@ -93,12 +93,6 @@ class sos_MATLAB:
             sio.savemat('ary2mtlb.mat', {'obj': obj})
             return 'sos_load_obj(fullfile(' + '\'' + dic + '\'' + ',' \
                 + '\'ary2mtlb.mat\'))'
-        elif isinstance(obj, dict):
-            dic = tempfile.tempdir
-            os.chdir(dic)
-            sio.savemat('dict2mtlb.mat', {'obj': obj})
-            return 'load(fullfile(' + '\'' + dic + '\'' + ',' \
-                + '\'dict2mtlb.mat\'))'
         elif isinstance(obj, pd.DataFrame):
             if self.kernel_name == 'octave':
                 dic = tempfile.tempdir
