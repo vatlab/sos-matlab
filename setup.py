@@ -40,6 +40,7 @@ setup(name = "sos-matlab",
     install_requires=[
           'sos>=0.18.0',
           'sos-notebook>=0.18.0',
+          'scipy',
       ],
     entry_points= '''
 [sos_languages]
