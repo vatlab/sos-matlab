@@ -57,10 +57,11 @@ class sos_MATLAB:
         elif obj is None:
             return 'NaN'
         elif isinstance(obj, dict):
-            return 'struct(' + ','.join('{},{}'.format(self._Matlab_repr(x),
-                                                       self._Matlab_repr(y)) for (x, y) in
-                                        obj.items()) + ')'
-
+            dic = tempfile.tempdir
+            os.chdir(dic)
+            sio.savemat('dict2mtlb.mat', {'obj': obj})
+            return 'getfield(load(fullfile(' + '\'' + dic + '\'' + ',' \
+                + '\'dict2mtlb.mat\')), \'obj\')'
 
         elif isinstance(obj, set):
             return '{' + ','.join(self._Matlab_repr(x) for x in obj) + '}'
