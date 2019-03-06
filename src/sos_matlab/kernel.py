@@ -4,6 +4,7 @@
 # Distributed under the terms of the 3-clause BSD License.
 
 import pandas as pd
+import csv
 import numpy as np
 import scipy.io as sio
 import os
@@ -98,12 +99,12 @@ class sos_MATLAB:
             if self.kernel_name == 'octave':
                 dic = tempfile.tempdir
                 os.chdir(dic)
-                obj.to_csv('df2oct.csv', index=False)
+                obj.to_csv('df2oct.csv', index=False, quoting=csv.QUOTE_NONNUMERIC, quotechar="'")
                 return 'dataframe(' + '\'' + dic + '/' + 'df2oct.csv\')'
             else:
                 dic = tempfile.tempdir
                 os.chdir(dic)
-                obj.to_csv('df2mtlb.csv', index=False)
+                obj.to_csv('df2mtlb.csv', index=False, quoting=csv.QUOTE_NONNUMERIC, quotechar="'")
                 return 'readtable(' + '\'' + dic + '/' + 'df2mtlb.csv\')'
 
     def get_vars(self, names):
