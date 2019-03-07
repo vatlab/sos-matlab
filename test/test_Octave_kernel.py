@@ -22,8 +22,28 @@ class TestOctaveKernel(unittest.TestCase):
 
     def tearDown(self):
         os.chdir(self.olddir)
-    
+
     @unittest.skipIf(not shutil.which('octave'), 'Octave not installed')
+    def testGetInt(self):
+        '''Test sending integers to SoS'''
+        with sos_kernel() as kc:
+            iopub = kc.iopub_channel
+            execute(kc=kc, code='''
+int1 = 123
+int2 = 12345678901234567
+''')
+            clear_channels(iopub)
+            execute(kc=kc, code="""
+%use Octave
+%get int1 int2
+""")
+            wait_for_idle(kc)
+            execute(kc=kc, code="int1")
+            wait_for_idle(kc)
+            execute(kc=kc, code="int2")
+            wait_for_idle(kc)
+
+
     def testGetPythonDataFrameFromOctave(self):
         # Python -> Matlab/Octave
         with sos_kernel() as kc:
@@ -126,6 +146,28 @@ mat_var = [1:3; 2:4]
             execute(kc=kc, code="%use sos")
             wait_for_idle(kc)
 
+    @unittest.skipIf(not shutil.which('octave'), 'Octave not installed')
+    def testGetNonNumericDataFrame(self):
+        '''Test %get non-numeric dataframe from Python to Octave #7'''
+        with sos_kernel() as kc:
+            iopub = kc.iopub_channel
+            execute(kc=kc, code="""
+import pandas as pd
+
+df = pd.DataFrame({'name': ['Leonardo', 'Donatello', 'Michelangelo', 'Raphael'],
+                   'mask': ['blue', 'purple', 'orange', 'red'],
+                   'weapon': ['ninjatos', 'bo', 'nunchaku', 'sai']})
+""")
+            wait_for_idle(kc)
+            execute(kc=kc, code="""\
+%use Octave
+%get df
+display(size(df))
+""")
+            stdout, _ = assemble_output(iopub)
+            self.assertEqual(stdout.strip().split(), ['3', '3'])
+            execute(kc=kc, code="%use sos")
+            wait_for_idle(kc)
 
 if __name__ == '__main__':
     unittest.main()
