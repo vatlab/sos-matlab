@@ -123,15 +123,11 @@ class sos_MATLAB:
 
     def put_vars(self, items, to_kernel=None):
         # first let us get all variables with names starting with sos
-        response = self.sos_kernel.get_response("display(cell2mat(who('sos*')))", ('stream',), name=('stdout',))[0][1]
-        all_vars = response['text'].strip()
-        # in case there is no var with name starts with sos, the response would be
-        #      []\n\n\n
-        # for matlab, and
-        #      [](0x0)\n\n]n
-        # for Octave
-        if '[]' not in all_vars:
-            items += [x for x in all_vars.split()]
+        response = self.sos_kernel.get_response("who('sos*')", ('stream',), name=('stdout',))
+        for line in response:
+            if line[1]['text'] == '\n' or 'Variables in the current scope' in line[1]['text']:
+                continue
+            items.extend(line[1]['text'].strip().split())
 
         if not items:
             return {}
