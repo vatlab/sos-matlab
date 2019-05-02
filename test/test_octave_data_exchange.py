@@ -7,7 +7,7 @@ from sos_notebook.test_utils import NotebookTest
 import random
 
 
-class TestPy2DataExchange(NotebookTest):
+class TestOctaveDataExchange(NotebookTest):
 
     def _var_name(self):
         if not hasattr(self, '_var_idx'):
@@ -21,9 +21,9 @@ class TestPy2DataExchange(NotebookTest):
         return notebook.check_output(
             f'''\
             %get {var_name}
-            print(repr({var_name}))
+            disp({var_name})
             ''',
-            kernel='Python2')
+            kernel='Octave')
 
     def put_to_SoS(self, notebook, py2_expr):
         var_name = self._var_name()
@@ -32,26 +32,24 @@ class TestPy2DataExchange(NotebookTest):
             %put {var_name}
             {var_name} = {py2_expr}
             ''',
-            kernel='Python2')
+            kernel='Octave')
         return notebook.check_output(f'print(repr({var_name}))', kernel='SoS')
 
     def test_get_none(self, notebook):
-        assert 'None' == self.get_from_SoS(notebook, 'None')
+        assert 'NaN' == self.get_from_SoS(notebook, 'None')
 
-    def test_put_none(self, notebook):
-        assert 'None' == self.put_to_SoS(notebook, 'None')
+    def test_put_NaN(self, notebook):
+        assert 'None' == self.put_to_SoS(notebook, 'NaN')
 
     def test_get_int(self, notebook):
         assert 123 == int(self.get_from_SoS(notebook, '123'))
-        assert 1234567891234 == int(
-            self.get_from_SoS(notebook, '1234567891234').rstrip('L'))
-        assert 123456789123456789 == int(
-            self.get_from_SoS(notebook, '123456789123456789').rstrip('L'))
+        assert '1.2346e+12' == self.get_from_SoS(notebook, '1234567891234')
 
     def test_put_int(self, notebook):
         assert 123 == int(self.put_to_SoS(notebook, '123'))
         assert 1234567891234 == int(self.put_to_SoS(notebook, '1234567891234'))
-        assert 123456789123456789 == int(
+        # rounding error occurs
+        assert 123456789123456784 == int(
             self.put_to_SoS(notebook, '123456789123456789'))
 
     def test_get_double(self, notebook):
@@ -63,12 +61,12 @@ class TestPy2DataExchange(NotebookTest):
         assert abs(float(val) - float(self.put_to_SoS(notebook, val))) < 1e-10
 
     def test_get_logic(self, notebook):
-        assert 'True' == self.get_from_SoS(notebook, 'True')
-        assert 'False' == self.get_from_SoS(notebook, 'False')
+        assert '1' == self.get_from_SoS(notebook, 'True')
+        assert '0' == self.get_from_SoS(notebook, 'False')
 
     def test_put_logic(self, notebook):
-        assert 'True' == self.put_to_SoS(notebook, 'True')
-        assert 'False' == self.put_to_SoS(notebook, 'False')
+        assert 'True' == self.put_to_SoS(notebook, 'true')
+        assert 'False' == self.put_to_SoS(notebook, 'false')
 
     def test_get_num_array(self, notebook):
         assert '[1]' == self.get_from_SoS(notebook, '[1]')
@@ -114,7 +112,6 @@ class TestPy2DataExchange(NotebookTest):
                                                        '[1.4, True, "asd"]')
 
     def test_get_dict(self, notebook):
-        # Python does not have named ordered list, so get dictionary
         output = self.get_from_SoS(notebook, "dict(a=1, b='2')")
         assert "{u'a': 1, u'b': u'2'}" == output or "{u'b': u'2', u'a': 1}" == output
 
