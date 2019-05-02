@@ -75,6 +75,10 @@ class TestOctaveDataExchange(NotebookTest):
         assert '[1.23]' == self.get_from_SoS(notebook, '[1.23]')
         assert '[1.4, 2]' == self.get_from_SoS(notebook, '[1.4, 2]')
 
+    def test_get_numpy_array(self, notebook):
+        notebook.call('import numpy as np', kernel='SoS')
+        assert '[1 2 3]' == self.get_from_SoS(notebook, 'np.array([1, 2, 3])')
+
     def test_put_num_array(self, notebook):
         # Note that single element numeric array is treated as single value
         assert '[1]' == self.put_to_SoS(notebook, '[1]')
@@ -101,6 +105,9 @@ class TestOctaveDataExchange(NotebookTest):
     def test_put_str(self, notebook):
         assert "'ab c d'" == self.put_to_SoS(notebook, "'ab c d'")
         assert "'ab\\td'" == self.put_to_SoS(notebook, r"'ab\td'")
+
+    def test_put_char_array(self, notebook):
+        output = self.put_to_SoS(notebook, "['1'; '2'; '3']")
 
     def test_get_mixed_list(self, notebook):
         assert "[1.4, True, u'asd']" == self.get_from_SoS(
@@ -138,3 +145,33 @@ class TestOctaveDataExchange(NotebookTest):
         output = self.put_to_SoS(notebook,
                                  "{'a': 1, 'b': {'c': 3, 'd': 'whatever'}}")
         assert "'a': 1" in output and "'b':" in output and "'c': 3" in output and "'d': 'whatever'" in output
+
+    def test_get_matrix(self, notebook):
+        notebook.call('import numpy as np', kernel='SoS')
+        output = self.get_from_SoS(notebook, 'np.matrix([[1,2],[3,4]])')
+
+    def test_put_matrix(self, notebook):
+        output = self.put_to_SoS(notebook, '[1:3; 2:4]')
+
+    def test_get_dataframe(self, notebook):
+        notebook.call('''
+            %put df --to Octave
+            import pandas as pd
+            import numpy as np
+            import scipy.io as sio
+            arr = np.random.randn(1000)
+            arr[::10] = np.nan
+            df = pd.DataFrame({'column_{0}'.format(i): arr for i in range(10)})
+            ''', kernel='SoS')
+        assert '900 10' in notebook.get_output('display(size(df))')
+        #
+        #  non-numeric dataframe
+        notebook.call('''
+            %put df --to Octave
+            import pandas as pd
+
+            df = pd.DataFrame({'name': ['Leonardo', 'Donatello', 'Michelangelo', 'Raphael'],
+                   'mask': ['blue', 'purple', 'orange', 'red'],
+                   'weapon': ['ninjatos', 'bo', 'nunchaku', 'sai']})
+            ''', kernel='SoS')
+        assert '900 10' in notebook.get_output('display(size(df))')
