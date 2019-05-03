@@ -24,14 +24,14 @@ if isnumeric(obj)
             end
         % complex
         elseif isreal(obj) == 0
-            rl = num2str(real(obj));
-            im = num2str(imag(obj));
+            rl = num2str(real(obj), 20);
+            im = num2str(imag(obj), 20);
             repr = strcat('complex(', rl, ',', im, ')');
         % none
         elseif isnan(obj)
             repr = 'None';
         else
-            repr = num2str(obj);
+            repr = num2str(obj, 20);
         end
     % isvector(A) returns logical 1 (true) if size(A) returns [1 n] or [n 1] with a nonnegative integer value n, and logical 0 (false) otherwise.
     elseif isvector(obj)
@@ -40,7 +40,7 @@ if isnumeric(obj)
         elseif any(isnan(obj))
             repr = strcat('np.array([', strjoin(arrayfun(@(x) sos_py_repr(x), obj, 'UniformOutput', false),','), '])');
         else
-            repr = strcat('np.array([', strjoin(arrayfun(@(x) num2str(x), obj, 'UniformOutput',false),','), '])');
+            repr = strcat('np.array([', strjoin(arrayfun(@(x) num2str(x, 20), obj, 'UniformOutput',false),','), '])');
         end
     % ismatrix(V) returns logical 1 (true) if size(V) returns [m n] with nonnegative integer values m and n, and logical 0 (false) otherwise.
     elseif ismatrix(obj)
@@ -49,7 +49,7 @@ if isnumeric(obj)
     % other, maybe canbe improved with the vector's block
     else
         % not sure what this could be
-        repr = num2str(obj);
+        repr = num2str(obj, 20);
     end
 % char_arr_var
 elseif ischar(obj) && size(obj, 1) > 1
