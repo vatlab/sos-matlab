@@ -119,8 +119,8 @@ class TestOctaveDataExchange(NotebookTest):
         assert 'a1' in output and 'a2' in output and 'a3' in output
 
     def test_put_str_array(self, notebook):
-        assert "['a1', 'a2', 'a3cv']" == self.put_to_SoS(notebook,
-                                                       "['a1'; 'a2'; 'a3cv']")
+        assert "['a1', 'a2', 'a3cv']" == self.put_to_SoS(
+            notebook, "['a1'; 'a2'; 'a3cv']")
 
     def test_get_mixed_list(self, notebook):
         output = self.get_from_SoS(notebook, '[2.4, True, "asd"]')
@@ -154,6 +154,27 @@ class TestOctaveDataExchange(NotebookTest):
     def test_put_matrix(self, notebook):
         output = self.put_to_SoS(notebook, '[1:3; 2:4]')
         assert 'matrix' in output and '[1., 2., 3.]' in output and '[2., 3., 4.]]' in output
+
+    def test_get_ndarray(self, notebook):
+        notebook.call(
+            '''\
+            %put var_3d --to Octave
+            from numpy import zeros
+            var_3d = zeros([2, 3, 4])
+        ''',
+            kernel='SoS')
+        assert '2   3   4' in notebook.check_output(
+            'disp(size(var_3d))', kernel='Octave')
+
+    def test_put_ndarray(self, notebook):
+        notebook.call(
+            '''\
+            %put octave_var_3d
+            octave_var_3d = zeros([2, 3, 4])
+        ''',
+            kernel='Octave')
+        assert '(2, 3, 4)' == notebook.check_output(
+            'octave_var_3d.shape', kernel='SoS')
 
     def test_get_dataframe(self, notebook):
         notebook.call(

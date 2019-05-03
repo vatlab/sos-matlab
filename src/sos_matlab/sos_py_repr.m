@@ -46,6 +46,10 @@ if isnumeric(obj)
     elseif ismatrix(obj)
         save('-v6', fullfile(tempdir, 'mat2py.mat'), 'obj');
         repr = strcat('np.matrix(sio.loadmat(''', tempdir, 'mat2py.mat'')', '[''', 'obj', '''])');
+    elseif length(size(obj)) >= 3
+        % 3d or even higher matrix
+        save('-v6', fullfile(tempdir, 'mat2py.mat'), 'obj');
+        repr = strcat('sio.loadmat(''', tempdir, 'mat2py.mat'')', '[''', 'obj', ''']');
     % other, maybe canbe improved with the vector's block
     else
         % not sure what this could be
