@@ -52,10 +52,10 @@ if isnumeric(obj)
         repr = num2str(obj);
     end
 % char_arr_var
-elseif ischar(obj) && length(obj)>1 && size(obj,2)==1
+elseif ischar(obj) && size(obj, 1) > 1
     repr = '[';
-    for i = 1:length(obj)
-        repr = strcat(repr, sos_py_repr(obj(i,1)), ',');
+    for i = 1:size(obj, 1)
+        repr = strcat(repr, 'r"""', (obj(i, :)), '""",');
     end
     repr = strcat(repr,']');
 % string
@@ -69,7 +69,7 @@ elseif isstruct(obj)
         repr = strcat(repr, '"', fields{i}, '":', sos_py_repr(obj.(fields{i})), ',');
     end
     repr = strcat(repr, '}');
-    
+
     %save('-v6', fullfile(tempdir, 'stru2py.mat'), 'obj');
     %repr = strcat('sio.loadmat(''', tempdir, 'stru2py.mat'')', '[''', 'obj', ''']');
 % cell
@@ -92,14 +92,14 @@ elseif islogical(obj)
         else
             repr = 'False';
         end
-    else 
+    else
         repr = '[';
         for i = 1:length(obj)
             repr = strcat(repr, sos_py_repr(obj(i)), ',');
         end
         repr = strcat(repr,']');
     end
-            
+
 % table, table usually is also real, and can be a vector and matrix
 % sometimes, so it needs to be put in front of them.
 elseif istable(obj)
