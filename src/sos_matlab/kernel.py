@@ -125,9 +125,8 @@ class sos_MATLAB:
         # first let us get all variables with names starting with sos
         response = self.sos_kernel.get_response("who('sos*')", ('stream',), name=('stdout',))
         for line in response:
-            if line[1]['text'] == '\n' or 'Variables in the current scope' in line[1]['text']:
-                continue
-            items.extend(line[1]['text'].strip().split())
+            # The prompt are filtered bu the sos prefix
+            items.extend([x for x in line[1]['text'].strip().split() if x.startswith('sos')])
 
         if not items:
             return {}

@@ -5,12 +5,11 @@
 
 from sos_notebook.test_utils import NotebookTest
 import random
-
 import shutil
 import pytest
 
-@pytest.mark.skipif(not shutil.which('octave'), reason='Octave is not available')
-class TestOctaveDataExchange(NotebookTest):
+@pytest.mark.skipif(not shutil.which('matlab'), reason='MATLAB is not available')
+class TestMATLABDataExchange(NotebookTest):
 
     def _var_name(self):
         if not hasattr(self, '_var_idx'):
@@ -26,7 +25,7 @@ class TestOctaveDataExchange(NotebookTest):
             %get {var_name}
             disp({var_name})
             ''',
-            kernel='Octave')
+            kernel='MATLAB')
 
     def put_to_SoS(self, notebook, py2_expr):
         var_name = self._var_name()
@@ -35,7 +34,7 @@ class TestOctaveDataExchange(NotebookTest):
             %put {var_name}
             {var_name} = {py2_expr}
             ''',
-            kernel='Octave')
+            kernel='MATLAB')
         return notebook.check_output(f'print(repr({var_name}))', kernel='SoS')
 
     def test_get_none(self, notebook):
@@ -57,12 +56,12 @@ class TestOctaveDataExchange(NotebookTest):
 
     def test_get_double(self, notebook):
         val = str(random.random())
-        notebook.call('format long', kernel='Octave')
+        notebook.call('format long', kernel='MATLAB')
         assert abs(float(val) - float(self.get_from_SoS(notebook, val))) < 1e-10
 
     def test_put_double(self, notebook):
         val = str(random.random())
-        notebook.call('format long', kernel='Octave')
+        notebook.call('format long', kernel='MATLAB')
         assert abs(float(val) - float(self.put_to_SoS(notebook, val))) < 1e-10
 
     def test_get_logic(self, notebook):
@@ -77,7 +76,7 @@ class TestOctaveDataExchange(NotebookTest):
         assert '1' == self.get_from_SoS(notebook, '[1]')
         assert '1\n2' == self.get_from_SoS(notebook, '[1, 2]').replace(' ', '')
         #
-        notebook.call('format short', kernel='Octave')
+        notebook.call('format short', kernel='MATLAB')
         assert '1.2300' == self.get_from_SoS(notebook, '[1.23]')
         assert '1.4000\n2.0000' == self.get_from_SoS(notebook,
                                                      '[1.4, 2]').replace(
@@ -85,10 +84,10 @@ class TestOctaveDataExchange(NotebookTest):
 
     def test_get_numpy_array(self, notebook):
         notebook.call('import numpy as np', kernel='SoS')
-        assert '1  2  3' == self.get_from_SoS(notebook, 'np.array([1, 2, 3])')
-        notebook.call('format short', kernel='Octave')
-        assert '11.0000    2.1000   32.0000' == self.get_from_SoS(
-            notebook, 'np.array([11, 2.1, 32])')
+        assert ['1', '2', '3'] == self.get_from_SoS(notebook, 'np.array([1, 2, 3])').split()
+        notebook.call('format short', kernel='MATLAB')
+        assert ['11.0000', '2.1000', '32.0000'] == self.get_from_SoS(
+            notebook, 'np.array([11, 2.1, 32])').split()
 
     def test_put_num_array(self, notebook):
         assert '1' == self.put_to_SoS(notebook, '[1]')
@@ -122,8 +121,9 @@ class TestOctaveDataExchange(NotebookTest):
         assert 'a1' in output and 'a2' in output and 'a3' in output
 
     def test_put_str_array(self, notebook):
-        assert "['a1', 'a2', 'a3cv']" == self.put_to_SoS(
-            notebook, "['a1'; 'a2'; 'a3cv']")
+        # NOTE: MATLAB only accepts strings with the same size
+        assert "['a1a1', 'a2a2', 'a3cv']" == self.put_to_SoS(
+            notebook, "['a1a1'; 'a2a2'; 'a3cv']")
 
     def test_get_mixed_list(self, notebook):
         output = self.get_from_SoS(notebook, '[2.4, True, "asd"]')
@@ -131,7 +131,7 @@ class TestOctaveDataExchange(NotebookTest):
 
     def test_get_dict(self, notebook):
         output = self.get_from_SoS(notebook, "dict(a=1, b='2')")
-        assert 'scalar structure' in output and 'a = 1' in output and 'b = 2' in output
+        assert 'a: 1' in output and "b: '2'" in output
 
     def test_get_set(self, notebook):
         output = self.get_from_SoS(notebook, "{1.5, 'abc'}")
@@ -147,7 +147,7 @@ class TestOctaveDataExchange(NotebookTest):
     def test_get_recursive(self, notebook):
         output = self.get_from_SoS(notebook,
                                    "{'a': 1, 'b': {'c': 3, 'd': 'whatever'}}")
-        assert 'scalar structure' in output and 'a = 1' in output and 'c = 3' in output and 'd = whatever' in output
+        assert 'a: 1' in output and 'b: [1x1 struct]' in output
 
     def test_get_matrix(self, notebook):
         notebook.call('import numpy as np', kernel='SoS')
@@ -156,46 +156,46 @@ class TestOctaveDataExchange(NotebookTest):
 
     def test_put_matrix(self, notebook):
         output = self.put_to_SoS(notebook, '[1:3; 2:4]')
-        assert 'matrix' in output and '[1., 2., 3.]' in output and '[2., 3., 4.]]' in output
+        assert 'matrix' in output and '[1, 2, 3]' in output and '[2, 3, 4]' in output
 
     def test_get_ndarray(self, notebook):
         notebook.call(
             '''\
-            %put var_3d --to Octave
+            %put var_3d --to MATLAB
             from numpy import zeros
             var_3d = zeros([2, 3, 4])
         ''',
             kernel='SoS')
         assert ['2', '3', '4'] == notebook.check_output(
-            'disp(size(var_3d))', kernel='Octave').split()
+            'disp(size(var_3d))', kernel='MATLAB').split()
 
     def test_put_ndarray(self, notebook):
         notebook.call(
             '''\
-            %put octave_var_3d
-            octave_var_3d = zeros([2, 3, 4])
+            %put MATLAB_var_3d
+            MATLAB_var_3d = zeros([2, 3, 4])
         ''',
-            kernel='Octave')
+            kernel='MATLAB')
         assert '(2, 3, 4)' == notebook.check_output(
-            'octave_var_3d.shape', kernel='SoS')
+            'MATLAB_var_3d.shape', kernel='SoS')
 
     def test_get_dataframe(self, notebook):
         notebook.call(
-            '''
-            %put df --to Octave
+            '''\
+            %put df --to MATLAB
             import pandas as pd
             import numpy as np
             arr = np.random.randn(100)
             df = pd.DataFrame({'column_{0}'.format(i): arr for i in range(10)})
             ''',
             kernel='SoS')
-        output = notebook.check_output('df', kernel='Octave')
-        assert 'dataframe' in output and '100 rows' in output
+        output = notebook.check_output('df', kernel='MATLAB')
+        assert '100x10 table' in output
         #
         #  non-numeric dataframe
         notebook.call(
-            '''
-            %put df --to Octave
+            '''\
+            %put df --to MATLAB
             import pandas as pd
 
             df = pd.DataFrame({'name': ['Leonardo', 'Donatello', 'Michelangelo', 'Raphael'],
@@ -203,5 +203,5 @@ class TestOctaveDataExchange(NotebookTest):
                    'weapon': ['ninjatos', 'bo', 'nunchaku', 'sai']})
             ''',
             kernel='SoS')
-        output = notebook.check_output('df', kernel='Octave')
-        assert 'dataframe' in output and '4 rows' in output and '3 columns' in output and 'Michelangelo' in output
+        output = notebook.check_output('df', kernel='MATLAB')
+        assert '4x3 table' in output and 'Michelangelo' in output

@@ -1,6 +1,3 @@
-# Copyright (c) Bo Peng and the University of Texas MD Anderson Cancer Center
-# Distributed under the terms of the 3-clause BSD License.
-
 function [repr] = sos_py_repr (obj)
 % isnumeric(A) returns true if A is a numeric array and false otherwise.
 % single Single-precision floating-point array
@@ -45,11 +42,11 @@ if isnumeric(obj)
     % ismatrix(V) returns logical 1 (true) if size(V) returns [m n] with nonnegative integer values m and n, and logical 0 (false) otherwise.
     elseif ismatrix(obj)
         save('-v6', fullfile(tempdir, 'mat2py.mat'), 'obj');
-        repr = strcat('np.matrix(sio.loadmat(''', tempdir, 'mat2py.mat'')', '[''', 'obj', '''])');
+        repr = strcat('np.matrix(sio.loadmat(r''', tempdir, 'mat2py.mat'')', '[''', 'obj', '''])');
     elseif length(size(obj)) >= 3
         % 3d or even higher matrix
         save('-v6', fullfile(tempdir, 'mat2py.mat'), 'obj');
-        repr = strcat('sio.loadmat(''', tempdir, 'mat2py.mat'')', '[''', 'obj', ''']');
+        repr = strcat('sio.loadmat(r''', tempdir, 'mat2py.mat'')', '[''', 'obj', ''']');
     % other, maybe canbe improved with the vector's block
     else
         % not sure what this could be
@@ -75,7 +72,7 @@ elseif isstruct(obj)
     repr = strcat(repr, '}');
 
     %save('-v6', fullfile(tempdir, 'stru2py.mat'), 'obj');
-    %repr = strcat('sio.loadmat(''', tempdir, 'stru2py.mat'')', '[''', 'obj', ''']');
+    %repr = strcat('sio.loadmat(r''', tempdir, 'stru2py.mat'')', '[''', 'obj', ''']');
 % cell
 elseif iscell(obj)
     if size(obj,1)==1
@@ -86,7 +83,7 @@ elseif iscell(obj)
         repr = strcat(repr,']');
     else
         save('-v6', fullfile(tempdir, 'cell2py.mat'), 'obj');
-        repr = strcat('sio.loadmat(''', tempdir, 'cell2py.mat'')', '[''', 'obj', ''']');
+        repr = strcat('sio.loadmat(r''', tempdir, 'cell2py.mat'')', '[''', 'obj', ''']');
     end
 % boolean
 elseif islogical(obj)
