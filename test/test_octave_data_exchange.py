@@ -199,7 +199,7 @@ class TestOctaveDataExchange(NotebookTest):
             import pandas as pd
 
             df = pd.DataFrame({'name': ['Leonardo', 'Donatello', 'Michelangelo', 'Raphael'],
-                   'mask': ['blue', 'purple', 'orange', 'red'],
+                   'num': [1, 2, 3, 4],
                    'weapon': ['ninjatos', 'bo', 'nunchaku', 'sai']})
             ''',
             kernel='SoS')
