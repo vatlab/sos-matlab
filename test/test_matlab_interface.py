@@ -11,7 +11,9 @@ from sos_notebook.test_utils import NotebookTest
 import shutil
 import pytest
 
-@pytest.mark.skipif(not shutil.which('matlab'), reason='MATLAB is not available')
+
+@pytest.mark.skipif(
+    not shutil.which('matlab'), reason='MATLAB is not available')
 class TestMATLABInterface(NotebookTest):
 
     #
@@ -32,14 +34,12 @@ class TestMATLABInterface(NotebookTest):
         output1 = notebook.check_output(
             '''\
             disp(pwd)
-            ''',
-            kernel="MATLAB")
+            ''', kernel="MATLAB")
         notebook.call('%cd ..', kernel="SoS")
         output2 = notebook.check_output(
             '''\
             disp(pwd)
-            ''',
-            kernel="MATLAB")
+            ''', kernel="MATLAB")
         assert len(output1) > len(output2)
         assert output1.startswith(output2)
         #
@@ -50,19 +50,8 @@ class TestMATLABInterface(NotebookTest):
         output = notebook.check_output(
             '''\
             disp(pwd)
-            ''',
-            kernel="MATLAB")
+            ''', kernel="MATLAB")
         assert os.path.realpath(tmpdir) == os.path.realpath(output)
-
-    def test_auto_vars(self, notebook):
-        '''Test automatic exchange of variables with names starting with sos'''
-        notebook.call('sosInSoS = 123', kernel="SoS")
-        notebook.call('sosInSoS_2 = 456', kernel="SoS")
-        assert '123' == notebook.check_output('disp(sosInSoS)', kernel='MATLAB')
-        assert '456' == notebook.check_output('disp(sosInSoS_2)', kernel='MATLAB')
-
-        notebook.call('sosInMATLAB = 12345', kernel="MATLAB")
-        assert '12345' == notebook.check_output('sosInMATLAB', kernel='SoS')
 
     # def test_preview(self, notebook):
     #     '''Test support for %preview'''

@@ -139,16 +139,6 @@ class sos_MATLAB:
                 .format(name, env.sos_dict[name].__class__.__name__))
 
     def put_vars(self, items, to_kernel=None):
-        # first let us get all variables with names starting with sos
-        response = self.sos_kernel.get_response(
-            "who('sos*')", ('stream',), name=('stdout',))
-        for line in response:
-            # The prompt are filtered bu the sos prefix
-            items.extend([
-                x for x in line[1]['text'].strip().split()
-                if x.startswith('sos')
-            ])
-
         if not items:
             return {}
 
