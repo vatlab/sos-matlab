@@ -13,6 +13,7 @@ import tempfile
 from sos.utils import short_repr, env
 from IPython.core.error import UsageError
 
+
 def homogeneous_type(seq):
     iseq = iter(seq)
     first_type = type(next(iseq))
@@ -21,9 +22,11 @@ def homogeneous_type(seq):
     else:
         return True if all(isinstance(x, first_type) for x in iseq) else False
 
+
 Matlab_init_statements = r'''
 path(path, {!r})
 '''.format(os.path.split(__file__)[0])
+
 
 class sos_MATLAB:
     supported_kernels = {'MATLAB': ['imatlab', 'matlab'], 'Octave': ['octave']}
@@ -67,20 +70,20 @@ class sos_MATLAB:
         elif isinstance(obj, set):
             return '{' + ','.join(self._Matlab_repr(x) for x in obj) + '}'
         elif isinstance(obj, (
-                              np.intc,
-                              np.intp,
-                              np.int8,
-                              np.int16,
-                              np.int32,
-                              np.int64,
-                              np.uint8,
-                              np.uint16,
-                              np.uint32,
-                              np.uint64,
-                              np.float16,
-                              np.float32,
-                              np.float64,
-                              )):
+                np.intc,
+                np.intp,
+                np.int8,
+                np.int16,
+                np.int32,
+                np.int64,
+                np.uint8,
+                np.uint16,
+                np.uint32,
+                np.uint64,
+                np.float16,
+                np.float32,
+                np.float64,
+        )):
             return repr(obj)
 
         elif isinstance(obj, np.matrixlib.defmatrix.matrix):
@@ -99,34 +102,52 @@ class sos_MATLAB:
             if self.kernel_name == 'octave':
                 dic = tempfile.tempdir
                 os.chdir(dic)
-                obj.to_csv('df2oct.csv', index=False, quoting=csv.QUOTE_NONNUMERIC, quotechar="'")
+                obj.to_csv(
+                    'df2oct.csv',
+                    index=False,
+                    quoting=csv.QUOTE_NONNUMERIC,
+                    quotechar="'")
                 return 'dataframe(' + '\'' + dic + '/' + 'df2oct.csv\')'
             else:
                 dic = tempfile.tempdir
                 os.chdir(dic)
-                obj.to_csv('df2mtlb.csv', index=False, quoting=csv.QUOTE_NONNUMERIC, quotechar="'")
+                obj.to_csv(
+                    'df2mtlb.csv',
+                    index=False,
+                    quoting=csv.QUOTE_NONNUMERIC,
+                    quotechar="'")
                 return 'readtable(' + '\'' + dic + '/' + 'df2mtlb.csv\')'
 
     def get_vars(self, names):
         for name in names:
             # add 'm' to any variable beginning with '_'
             if name.startswith('_'):
-                self.sos_kernel.warn('Variable {} is passed from SoS to kernel {} as {}'.format(name, self.kernel_name, 'm' + name))
+                self.sos_kernel.warn(
+                    'Variable {} is passed from SoS to kernel {} as {}'.format(
+                        name, self.kernel_name, 'm' + name))
                 newname = 'm' + name
             else:
                 newname = name
             matlab_repr = self._Matlab_repr(env.sos_dict[name])
             if self.sos_kernel._debug_mode:
                 self.sos_kernel.warn(matlab_repr)
-            self.sos_kernel.run_cell('{} = {}'.format(newname, matlab_repr), True, False,
-                    on_error='Failed to get variable {} of type {} to Matlab'.format(name, env.sos_dict[name].__class__.__name__))
+            self.sos_kernel.run_cell(
+                '{} = {}'.format(newname, matlab_repr),
+                True,
+                False,
+                on_error='Failed to get variable {} of type {} to Matlab'
+                .format(name, env.sos_dict[name].__class__.__name__))
 
     def put_vars(self, items, to_kernel=None):
         # first let us get all variables with names starting with sos
-        response = self.sos_kernel.get_response("who('sos*')", ('stream',), name=('stdout',))
+        response = self.sos_kernel.get_response(
+            "who('sos*')", ('stream',), name=('stdout',))
         for line in response:
             # The prompt are filtered bu the sos prefix
-            items.extend([x for x in line[1]['text'].strip().split() if x.startswith('sos')])
+            items.extend([
+                x for x in line[1]['text'].strip().split()
+                if x.startswith('sos')
+            ])
 
         if not items:
             return {}
@@ -134,7 +155,8 @@ class sos_MATLAB:
         result = {}
         for item in items:
             py_repr = 'display(sos_py_repr({}))'.format(item)
-            response = self.sos_kernel.get_response(py_repr, ('stream',), name=('stdout',))[0][1]
+            response = self.sos_kernel.get_response(
+                py_repr, ('stream',), name=('stdout',))[0][1]
             expr = response['text']
 
             try:
@@ -144,8 +166,10 @@ class sos_MATLAB:
                 # evaluate as raw string to correctly handle \\ etc
                 result[item] = eval(expr)
             except Exception as e:
-                self.sos_kernel.warn('Failed to evaluate {!r}: {}'.format(expr, e))
+                self.sos_kernel.warn('Failed to evaluate {!r}: {}'.format(
+                    expr, e))
         return result
 
     def sessioninfo(self):
-        return self.sos_kernel.get_response(r'ver', ('stream',), name=('stdout',))[0][1]['text']
+        return self.sos_kernel.get_response(
+            r'ver', ('stream',), name=('stdout',))[0][1]['text']
