@@ -145,9 +145,12 @@ class sos_MATLAB:
         result = {}
         for item in items:
             py_repr = 'display(sos_py_repr({}))'.format(item)
-            response = self.sos_kernel.get_response(
-                py_repr, ('stream',), name=('stdout',))[0][1]
-            expr = response['text']
+            #9 MATLAB can use multiple messages for standard output,
+            # so we need to concatenate these outputs.
+            expr = ''
+            for _, msg in self.sos_kernel.get_response(
+                    py_repr, ('stream',), name=('stdout',)):
+                expr += msg['text']
 
             try:
                 if 'loadmat' in expr:
