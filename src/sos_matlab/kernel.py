@@ -129,8 +129,7 @@ class sos_MATLAB:
             else:
                 newname = name
             matlab_repr = self._Matlab_repr(env.sos_dict[name])
-            if self.sos_kernel._debug_mode:
-                self.sos_kernel.warn(matlab_repr)
+            env.log_to_file('KERNEL', f'Executing \n{matlab_repr}')
             self.sos_kernel.run_cell(
                 '{} = {}'.format(newname, matlab_repr),
                 True,
