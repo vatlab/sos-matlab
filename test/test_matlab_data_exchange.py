@@ -108,6 +108,14 @@ class TestMATLABDataExchange(NotebookTest):
         assert '[True, False, True]' == self.put_to_SoS(notebook,
                                                         '[true, false, true]')
 
+
+    def test_put_complex_array(self, notebook):
+        # Note that single element numeric array is treated as single value
+        output = self.put_to_SoS(notebook, '[2+5i  10+20i 234]').replace(' ', '')
+        assert '2.+5.j' in output
+        assert '10.+20.j' in output
+        assert '234' in output
+
     def test_get_str(self, notebook):
         assert "ab c d" == self.get_from_SoS(notebook, "'ab c d'")
         assert "ab\\td" == self.get_from_SoS(notebook, r"'ab\td'")

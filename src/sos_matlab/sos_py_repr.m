@@ -36,8 +36,10 @@ if isnumeric(obj)
             repr = strcat('np.array([', strjoin(arrayfun(@(x) sos_py_repr(x), obj, 'UniformOutput', false),','), '])');
         elseif any(isnan(obj))
             repr = strcat('np.array([', strjoin(arrayfun(@(x) sos_py_repr(x), obj, 'UniformOutput', false),','), '])');
-        else
+        elseif all(isreal(obj))
             repr = strcat('np.array([', strjoin(arrayfun(@(x) num2str(x, 20), obj, 'UniformOutput',false),','), '])');
+        else
+            repr = strcat('np.array([', strjoin(arrayfun(@(x) sos_py_repr(x), obj, 'UniformOutput', false),','), '])');
         end
     % ismatrix(V) returns logical 1 (true) if size(V) returns [m n] with nonnegative integer values m and n, and logical 0 (false) otherwise.
     elseif ismatrix(obj)
