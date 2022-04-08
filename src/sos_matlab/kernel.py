@@ -8,7 +8,7 @@ import csv
 import numpy as np
 import scipy.io as sio
 import os
-from collections import Sequence
+from collections.abc import Sequence
 import tempfile
 from sos.utils import short_repr, env
 from IPython.core.error import UsageError
