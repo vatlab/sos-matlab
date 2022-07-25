@@ -46,5 +46,7 @@ setup(name = "sos-matlab",
 [sos_languages]
 MATLAB = sos_matlab.kernel:sos_MATLAB
 Octave = sos_matlab.kernel:sos_MATLAB
+[sos_converters]
+m-ipynb = sos_matlab.converter:OctaveToNotebookConverter
 '''
 )

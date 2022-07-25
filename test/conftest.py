@@ -5,17 +5,18 @@
 
 import json
 import os
-import pytest
-import requests
-from subprocess import Popen
+import shutil
 import sys
-from testpath.tempdir import TemporaryDirectory
 import time
+from subprocess import Popen
 from urllib.parse import urljoin
 
-from selenium.webdriver import Firefox, Remote, Chrome
+import pytest
+import requests
 from selenium import webdriver
+from selenium.webdriver import Chrome, Firefox, Remote
 from sos_notebook.test_utils import Notebook
+from testpath.tempdir import TemporaryDirectory
 
 pjoin = os.path.join
 
@@ -157,3 +158,18 @@ def authenticated_browser(selenium_driver, notebook_server):
 def notebook(authenticated_browser):
     return Notebook.new_notebook(
         authenticated_browser, kernel_name='kernel-sos')
+
+
+@pytest.fixture()
+def sample_m_script():
+    if not os.path.isdir('temp'):
+        os.mkdir('temp')
+    with open('temp/script.m', 'w') as script:
+        script.write('''
+a = [1 2
+3 4]
+b = '1233'
+''')
+    yield 'temp/script.m'
+
+    shutil.rmtree('temp')
