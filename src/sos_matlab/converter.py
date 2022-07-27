@@ -34,7 +34,7 @@ class OctaveToNotebookConverter(object):
             if args.use_sos:
                 metainfo = {'kernel': 'SoS'}
             cells = []
-            lines = re.split(r'\n+', src.read())
+            lines = re.split(r'\n\n+', src.read())
             count = 1
             for line in lines: 
                 cells.append(
