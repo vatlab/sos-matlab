@@ -1,7 +1,9 @@
 import argparse
+import re
+
 import nbformat
+from nbformat.v4 import new_code_cell, new_notebook
 from sos.utils import env
-from nbformat.v4 import new_code_cell, new_markdown_cell, new_notebook
 
 
 class OctaveToNotebookConverter(object):
@@ -33,10 +35,14 @@ class OctaveToNotebookConverter(object):
             metainfo = {}
             if args.use_sos:
                 metainfo = {'kernel': 'SoS'}
-            
-            lines = re.split(r'\n\s*\n', src.read())
-            cells = [new_code_cell(source=line, execution_count=count+1, metadata=metainfo) for count, line in enumerate(lines)]
 
+            cells = [
+                new_code_cell(
+                    source=line.rstrip(),
+                    execution_count=count + 1,
+                    metadata=metainfo)
+                for count, line in enumerate(re.split(r'\n\s*\n', src.read()))
+            ]
 
         #
         metadata = {}
