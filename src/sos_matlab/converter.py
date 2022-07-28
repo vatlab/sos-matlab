@@ -33,13 +33,10 @@ class OctaveToNotebookConverter(object):
             metainfo = {}
             if args.use_sos:
                 metainfo = {'kernel': 'SoS'}
-            cells = [
-                new_code_cell(
-                    # remove any trailing blank lines...
-                    source=src.read(),
-                    execution_count=1,
-                    metadata=metainfo)
-            ]
+            
+            lines = re.split(r'\n\s*\n', src.read())
+            cells = [new_code_cell(source=line, execution_count=count+1, metadata=metainfo) for count, line in enumerate(lines)]
+
 
         #
         metadata = {}
