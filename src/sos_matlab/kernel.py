@@ -152,6 +152,7 @@ class sos_MATLAB:
                 expr += msg['text']
 
             try:
+                cwd = os.getcwd()
                 if 'loadmat' in expr:
                     # imported to be used by eval
                     from scipy.io import loadmat
@@ -160,6 +161,8 @@ class sos_MATLAB:
             except Exception as e:
                 self.sos_kernel.warn('Failed to evaluate {!r}: {}'.format(
                     expr, e))
+            finally:
+                os.chdir(cwd)
         return result
 
     def sessioninfo(self):
