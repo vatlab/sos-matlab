@@ -62,8 +62,7 @@ class sos_MATLAB:
             return 'NaN'
         elif isinstance(obj, dict):
             dic = tempfile.tempdir
-            os.chdir(dic)
-            sio.savemat('dict2mtlb.mat', {'obj': obj})
+            sio.savemat(os.path.join(dic, 'dict2mtlb.mat'), {'obj': obj})
             return 'getfield(load(fullfile(' + '\'' + dic + '\'' + ',' \
                 + '\'dict2mtlb.mat\')), \'obj\')'
 
@@ -88,31 +87,27 @@ class sos_MATLAB:
 
         elif isinstance(obj, np.matrixlib.defmatrix.matrix):
             dic = tempfile.tempdir
-            os.chdir(dic)
-            sio.savemat('mat2mtlb.mat', {'obj': obj})
+            sio.savemat(os.path.join(dic, 'mat2mtlb.mat'), {'obj': obj})
             return 'cell2mat(struct2cell(load(fullfile(' + '\'' + dic + '\'' + ',' \
                 + '\'mat2mtlb.mat\'))))'
         elif isinstance(obj, np.ndarray):
             dic = tempfile.tempdir
-            os.chdir(dic)
-            sio.savemat('ary2mtlb.mat', {'obj': obj})
+            sio.savemat(os.path.join(dic, 'ary2mtlb.mat'), {'obj': obj})
             return 'sos_load_obj(fullfile(' + '\'' + dic + '\'' + ',' \
                 + '\'ary2mtlb.mat\'))'
         elif isinstance(obj, pd.DataFrame):
             if self.kernel_name == 'octave':
                 dic = tempfile.tempdir
-                os.chdir(dic)
                 obj.to_csv(
-                    'df2oct.csv',
+                    os.path.join(dic, 'df2oct.csv'),
                     index=False,
                     quoting=csv.QUOTE_NONNUMERIC,
                     quotechar="'")
                 return 'dataframe(' + '\'' + dic + '/' + 'df2oct.csv\')'
             else:
                 dic = tempfile.tempdir
-                os.chdir(dic)
                 obj.to_csv(
-                    'df2mtlb.csv',
+                    os.path.join(dic, 'df2mtlb.csv'),
                     index=False,
                     quoting=csv.QUOTE_NONNUMERIC,
                     quotechar="'")
