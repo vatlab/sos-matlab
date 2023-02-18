@@ -39,7 +39,7 @@ setup(name = "sos-matlab",
     package_dir = {'': 'src'},
     install_requires=[
           'sos>=0.18.0',
-          'sos-notebook>=0.18.0',
+          'sos-notebook>=0.24.0',
           'scipy',
       ],
     entry_points= '''

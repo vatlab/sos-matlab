@@ -102,7 +102,7 @@ class sos_MATLAB:
             obj.to_csv(os.path.join(dic, 'df2mtlb.csv'), index=False, quoting=csv.QUOTE_NONNUMERIC, quotechar="'")
             return 'readtable(' + '\'' + dic + '/' + 'df2mtlb.csv\')'
 
-    def get_vars(self, names, as_var=None):
+    async def get_vars(self, names, as_var=None):
         for name in names:
             # add 'm' to any variable beginning with '_'
             if as_var is not None:
@@ -114,7 +114,7 @@ class sos_MATLAB:
                 newname = name
             matlab_repr = self._Matlab_repr(env.sos_dict[name])
             env.log_to_file('KERNEL', f'Executing \n{matlab_repr}')
-            self.sos_kernel.run_cell(
+            await self.sos_kernel.run_cell(
                 f'{newname} = {matlab_repr}',
                 True,
                 False,
