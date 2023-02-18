@@ -1,5 +1,6 @@
 import argparse
 import re
+import sys
 
 import nbformat
 from nbformat.v4 import new_code_cell, new_notebook
