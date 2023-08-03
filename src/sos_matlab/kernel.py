@@ -28,7 +28,7 @@ path(path, {os.path.split(__file__)[0]!r})
 
 
 class sos_MATLAB:
-    supported_kernels = {'MATLAB': ['jupyter_matlab_kernel', 'imatlab', 'matlab'], 'Octave': ['octave']}
+    supported_kernels = {'MATLAB': ['imatlab', 'matlab'], 'Octave': ['octave']}
     background_color = {'MATLAB': '#8ee7f1', 'Octave': '#dff8fb'}
     options = {}
     cd_command = 'cd {dir}'
